@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Operador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Buscar Rangos de Numeración por Operador</h1>
+        <div class="mb-3">
+            <label for="operatorName" class="form-label">Nombre del Operador</label>
+            <input type="text" class="form-control" id="operatorName" placeholder="Ejemplo: Premium Numbers">
+        </div>
+        <div class="d-inline-block">
+  <button id="searchBtn" class="btn btn-primary">Buscar</button>
+</div>
+<div class="d-inline-block">
+  <button id="exportBtn" class="btn btn-success" onclick="exportToCSV()">Exportar</button>
+</div>
+
+
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Primer Rango</th>
+                    <th>Segundo Rango</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>Operador</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="results">
+            </tbody>
+        </table>
+    </div>
+    <script>
+
+// Función para exportar los datos a un archivo CSV
+function exportToCSV() {
+    let csvContent = "Primer Rango,Segundo Rango,Ciudad,Estado,Operador,Fecha\n";
+    $("#results tr").each(function() {
+        $(this).find("td").each(function() {
+            csvContent += $(this).text() + ',';
+        });
+        csvContent = csvContent.slice(0, -1);
+        csvContent += "\n";
+    });
+
+    // Crear y descargar el archivo CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "resultados.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Funcion de Busqueda
+
+        $(document).ready(function() {
+    $('#searchBtn').click(function() {
+        const operatorName = $('#operatorName').val();
+        $.ajax({
+            url: "/api/search",
+            type: "POST",
+            contentType: "application/json",  // Añadir este encabezado
+            data: JSON.stringify({ operator_name: operatorName }),  // Convertir el objeto a una cadena JSON
+            success: function(data) {
+                let html = '';
+                for (const row of data) {
+                    html += '<tr>';
+                    for (const cell of row) {
+                        html += '<td>' + cell + '</td>';
+                    }
+                    html += '</tr>';
+                }
+                $('#results').html(html);
+            }
+        });
+    });
+});
+
+    </script>
+</body>
+</html>
