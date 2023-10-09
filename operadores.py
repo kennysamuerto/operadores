@@ -21,7 +21,7 @@ def search():
     print("Data received:", data)  # Debugging
     operator_name = data.get('operator_name', '')
     print("Operator name:", operator_name)  # Debugging
-    file_path = "/home/cosasdenavidad/operadores/Geografico.txt"
+    file_path = "/ruta/archivo/operadores/Geografico.txt"
     results = extract_operator_lines_case_insensitive(file_path, operator_name)
     print("Search results:", results)  # Debugging
     return jsonify(results)
